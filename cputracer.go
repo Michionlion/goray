@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -11,14 +10,24 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-// PixelsPerMeter is exactly what it says.
-const PixelsPerMeter = 100
+const (
+	// PixelsPerMeter is exactly what it says.
+	PixelsPerMeter = 100
+)
+
+// RedDiffuse is a red, diffusive material.
+var RedDiffuse = Material{diffuse: ShadedColor{1, 0, 0, 1}, reflectivity: 0.12}
+
+// GreenReflective is a green, reflective material.
+var GreenReflective = Material{diffuse: ShadedColor{0, 1, 0, 1}, reflectivity: 0.61}
 
 func main() {
 
-	sphere := &Sphere{mgl32.Vec3{3, 5, 5}, 2}
-
 	ray := &Ray{direction: mgl32.Vec3{0, 0, 1}}
+
+	sphere1 := &Sphere{mgl32.Vec3{200, 300, 0}, 100, &RedDiffuse}
+	sphere2 := &Sphere{mgl32.Vec3{400, 400, 0}, 100, &GreenReflective}
+	sphere3 := &Sphere{mgl32.Vec3{500, 140, 0}, 100, &RedDiffuse}
 
 	const Width = 1600
 	const Height = 900
@@ -40,7 +49,7 @@ func main() {
 				colValue = ShadedColor{0, 0, 0, 1} //ShadedColor{0, 0, 0, 1}
 			} else {
 				// fmt.Printf("\u001b[42m  \u001b[0m")
-				fmt.Printf("Hit %v", hit)
+				// fmt.Printf("Hit %v", hit)
 				colValue = ShadedColor{0, 0.5, 0, 0.75} //ShadedColor{0, 1, 0, 1}
 			}
 			// fmt.Printf("putting %v", colValue)

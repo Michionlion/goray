@@ -1,6 +1,9 @@
 package main
 
 import (
+	"container/list"
+	"math"
+
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -22,6 +25,19 @@ import (
 type Sphere struct {
 	position mgl32.Vec3
 	radius   float32
+	material *Material
+}
+
+// Light TODO.
+type Light struct {
+	position mgl32.Vec3
+	color    ShadedColor
+}
+
+// Material TODO.
+type Material struct {
+	diffuse      ShadedColor
+	reflectivity float32
 }
 
 // Ray TODO.
@@ -30,21 +46,18 @@ type Ray struct {
 	direction mgl32.Vec3
 }
 
-// HitType TODO.
-type HitType int32
-
-const (
-	// EDGE TODO.
-	EDGE HitType = 0
-
-	// FULL TODO.
-	FULL HitType = 1
-)
-
 // Hit TODO.
 type Hit struct {
 	position mgl32.Vec3
-	hitType  HitType
+	distance float32
+}
+
+type World struct {
+	spheres *list.List
+}
+
+func NewWorld() {
+	world := World{spheres: list.New()}
 }
 
 // // WorldRenderer struct.
@@ -77,13 +90,21 @@ func raySphereIntersection(ray *Ray, sphere *Sphere) *Hit {
 		return nil
 	}
 
-	hit := &Hit{}
+	discriminantSqrt := float32(math.Sqrt(float64(discriminant)))
 
-	if discriminant == 0 {
-		hit.hitType = EDGE
-	} else {
-		hit.hitType = FULL
+	t0 := (-B + discriminantSqrt) / 2
+	t1 := (-B - discriminantSqrt) / 2
+
+	if t0 > t1 {
+		t0 = t1
 	}
 
-	return hit
+	if t0 > 0.0001 {
+		hit := &Hit{}
+		hit.position = ray.origin.Add(ray.direction.Mul(t0))
+		hit.distance = t0
+		return hit
+	}
+
+	return nil
 }
