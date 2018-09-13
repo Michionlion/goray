@@ -2,37 +2,9 @@ package main
 
 import (
 	"container/list"
-	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
 )
-
-// Voxel struct.
-// type Voxel struct {
-// 	col color.Color
-// }
-//
-// // World struct.
-// type World struct {
-// 	voxels [][][]Voxel
-// }
-//
-// func (world *World) getVoxel(x, y, z int) *Voxel {
-// 	return &world.voxels[x][y][z]
-// }
-
-// Sphere TODO.
-type Sphere struct {
-	position mgl32.Vec3
-	radius   float32
-	material *Material
-}
-
-// Light TODO.
-type Light struct {
-	position mgl32.Vec3
-	color    ShadedColor
-}
 
 // Material TODO.
 type Material struct {
@@ -50,61 +22,41 @@ type Ray struct {
 type Hit struct {
 	position mgl32.Vec3
 	distance float32
+	object   Object
 }
 
+// World holds the objects and lights in a scene
 type World struct {
-	spheres *list.List
+	objects *list.List
+	lights  *list.List
 }
 
-func NewWorld() {
-	world := World{spheres: list.New()}
+// NewWorld creates a new, empty world.
+func NewWorld() *World {
+	world := &World{
+		objects: list.New(),
+		lights:  list.New(),
+	}
+	return world
 }
 
-// // WorldRenderer struct.
-// type WorldRenderer struct {
-// 	// world *World
-// 	sphereRadius int
-// 	spherePos    mgl32.Vec3
-// }
+// Add adds an object to the world.
+func (world *World) Add(object Object) {
+	world.objects.PushBack(object)
+}
 
-// func (wr *WorldRenderer) ray(dir *mgl32.Vec3) *mgl32.Vec3 {
-//
-// 	// first pass -- ignore dir
-//
-// 	return nil
-// }
+// AddLight adds a light to the world.
+func (world *World) AddLight(light *Light) {
+	world.lights.PushBack(light)
+}
 
-func raySphereIntersection(ray *Ray, sphere *Sphere) *Hit {
+// CastObjectRay casts a given ray to check for collisions with objects.
+// It will return the nearest hit.
+func (world *World) CastObjectRay(ray *Ray) *Hit {
+	return nil
+}
 
-	A := ray.direction.Dot(ray.direction)
-
-	dist := ray.origin.Sub(sphere.position)
-
-	B := 2 * ray.direction.Dot(dist)
-
-	C := dist.Dot(dist) - sphere.radius*sphere.radius
-
-	discriminant := B*B - 4*A*C
-
-	if discriminant < 0 {
-		return nil
-	}
-
-	discriminantSqrt := float32(math.Sqrt(float64(discriminant)))
-
-	t0 := (-B + discriminantSqrt) / 2
-	t1 := (-B - discriminantSqrt) / 2
-
-	if t0 > t1 {
-		t0 = t1
-	}
-
-	if t0 > 0.0001 {
-		hit := &Hit{}
-		hit.position = ray.origin.Add(ray.direction.Mul(t0))
-		hit.distance = t0
-		return hit
-	}
-
+// CastLightRays casts rays to every light.
+func (world *World) CastLightRays(from *Hit) *Hit {
 	return nil
 }

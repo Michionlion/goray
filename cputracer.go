@@ -24,10 +24,10 @@ var GreenReflective = Material{diffuse: ShadedColor{0, 1, 0, 1}, reflectivity: 0
 func main() {
 
 	ray := &Ray{direction: mgl32.Vec3{0, 0, 1}}
-
-	sphere1 := &Sphere{mgl32.Vec3{200, 300, 0}, 100, &RedDiffuse}
-	sphere2 := &Sphere{mgl32.Vec3{400, 400, 0}, 100, &GreenReflective}
-	sphere3 := &Sphere{mgl32.Vec3{500, 140, 0}, 100, &RedDiffuse}
+	world := NewWorld()
+	world.Add(&Sphere{mgl32.Vec3{200, 300, 0}, 100, &RedDiffuse})
+	world.Add(&Sphere{mgl32.Vec3{400, 400, 0}, 100, &GreenReflective})
+	world.Add(&Sphere{mgl32.Vec3{500, 140, 0}, 100, &RedDiffuse})
 
 	const Width = 1600
 	const Height = 900
@@ -42,7 +42,7 @@ func main() {
 			// Set the x-coordinate of the start position of the ray
 			ray.origin[0] = float32(x) / PixelsPerMeter
 
-			hit := raySphereIntersection(ray, sphere)
+			hit := world.CastObjectRay(ray)
 			var colValue color.Color
 			if hit == nil {
 				// fmt.Printf("\u001b[31m  \u001b[0m")
